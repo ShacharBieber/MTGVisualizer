@@ -1,0 +1,70 @@
+import os
+from enum import Enum
+
+class MagicSet:
+    def __init__(self, set_code: str):
+        self.set_code = set_code
+        self.set_name = SetNames[set_code].value
+        if os.path.exists(f'assets/set_symbols/{set_code.lower()}.svg'):
+            self.set_symbol_path = f'/assets/set_symbols/{set_code.lower()}.svg'
+        else:
+            self.set_symbol_path = f'/assets/set_symbols/no_symbol.svg'
+
+class SetNames(Enum):
+    KTK = "Khans of Tarkir"
+    FRF = "Fate Reforged"
+    DTK = "Dragons of Tarkir"
+    ORI = "Magic Origins"
+    MM2 = "Modern Masters 2"
+    BFZ = "Battle for Zendikar"
+    OGW = "Oath of the Gatewatch"
+    MMA = "Modern Masters"
+    SOI = "Shadows over Innistrad"
+    EMN = "Eldritch Moon"
+    KLD = "Kaladesh"
+    AER = "Aether Revolt"
+    AKH = "Amonkhet"
+    THS = "Theros"
+    MM3 = "Modern Masters 3"
+    HOU = "Hour of Devastation"
+    XLN = "Ixalan"
+    CN2 = "Conspiracy 2"
+    UST = "Unstable"
+    RIX = "Rivals of Ixalan"
+    A25 = "Masters 25"
+    DOM = "Dominaria"
+    M19 = "Magic 2019"
+    GRN = "Guilds of Ravnica"
+    RNA = "Ravnica Allegiance"
+    WAR = "War of the Spark"
+    M20 = "Magic 2020"
+    ELD = "Eldraine"
+    THB = "Theros Beyond Death"
+    IKO = "Ikoria"
+    M21 = "Magic 2021"
+    ZNR = "Zendikar Rising"
+    KHM = "Kaldheim"
+    STX = "Strixhaven: School of Mages"
+    AFR = "Adventures in the Forgotten Realms"
+    AKR = "Amonkhet Remastered"
+    KLR = "Kaladesh Remastered"
+    MID = "Midnight Hunt"
+    VOW = "Crimson Vow"
+    NEO = "Kamigawa: Neon Dynasty"
+    SNC = "Streets of New Capenna"
+    CHS = "Chaos Draft"
+    DMU = "Dominaria United"
+    BRO = "The Brothers' War"
+    ONE = "Phyrexia: All Will Be One"
+    SIR = "Shadows over Innistrad Remastered"
+    MOM = "March of the Machine"
+    LTR = "The Lord of the Rings: Tales of Middle-earth"
+    WOE = "Wilds of Eldraine"
+    LCI = "Lost Caverns of Ixalan"
+    MKM = "Murders at Karlov Manor"
+    RAVM = "Ravnica Joined"
+    OTJ = "Outlaws of Thunder Junction"
+    MH3 = "Modern Horizons 3"
+    BLB = "Bloomburrow"
+    DSK = "Duskmourn: House of Horror"
+    FDN = "Foundations"
