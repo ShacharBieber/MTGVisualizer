@@ -3,7 +3,6 @@ from pandas.core.frame import DataFrame
 from magic_set import MagicSet, SetNames
 from dash import html
 from enums import ColorNames
-from datetime import date
 
 def get_set_names_for_display(dataframe: DataFrame) -> list:
     set_code_names = dataframe['set_code_name'].drop_duplicates().to_list()[::-1]

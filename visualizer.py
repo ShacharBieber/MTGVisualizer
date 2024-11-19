@@ -7,11 +7,9 @@ import dash_bootstrap_components as dbc
 import emoji
 from dataframe_calculations import get_event_data, get_multi_dropdown_data, get_statistics, add_score_data, get_general_statistics, filter_colors, add_date_formats, filter_date_range
 from enums import ColorNames
-from datetime import datetime
 from static_design_elements import date_picker, color_picker, general_stats, color_filter_style
 import re
 
-#TODO: GITHUB  PAGES
 CSV_PATH = 'event_results.csv'
 
 def set_up_initial_figure(dataframe: DataFrame) -> go.Figure:
