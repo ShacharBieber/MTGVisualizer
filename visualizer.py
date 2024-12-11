@@ -10,7 +10,8 @@ from enums import ColorNames
 from static_design_elements import date_picker, color_picker, general_stats, color_filter_style
 import re
 
-CSV_PATH = 'event_results.csv'
+CSV_URL = 'https://docs.google.com/spreadsheets/d/1eLhLyqqhQkvQ5eOFPhDkJkpYwLvoqBhOAysgQTjCwjc/export?format=csv&gid=0'
+
 
 def set_up_initial_figure(dataframe: DataFrame) -> go.Figure:
     initial_figure = go.Figure()
@@ -71,7 +72,7 @@ def set_up_initial_color_pies(dataframe: DataFrame) -> (go.Figure, go.Figure):
     return initial_color_pie, initial_splash_pie
 
 
-df = pd.read_csv(CSV_PATH)
+df = pd.read_csv(CSV_URL)
 df = add_score_data(df)
 add_date_formats(df)
 

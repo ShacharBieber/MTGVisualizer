@@ -68,3 +68,4 @@ class SetNames(Enum):
     BLB = "Bloomburrow"
     DSK = "Duskmourn: House of Horror"
     FDN = "Foundations"
+    PIO = "Pioneer Masters"
