@@ -81,6 +81,16 @@ color_picker = dcc.Checklist(
     style={"padding-top": 5}
 )
 
+platform_selector = dcc.Checklist(
+    id='platform-selector',
+    options=[
+        {'label': 'Paper', 'value': 'paper'},
+        {'label': 'Arena', 'value': 'arena'},
+    ],
+    value=['paper', 'arena'],
+    inputStyle={"margin-right": "5px"},
+)
+
 color_filter_style = dcc.Dropdown(
     id='color-filter-style',
     options=[

@@ -99,6 +99,13 @@ def get_general_statistics(dataframe: DataFrame, platforms: str):
     general_statistics = f'Overall win rate: {win_rate}% | Splash rate: {splash_rate}%{total_games_or_rounds_str} '
     return general_statistics
 
+
+def get_color_pair_statistics(dataframe: DataFrame) -> DataFrame:
+    grouped_df = dataframe.groupby('colors')[['wins', 'losses', 'ties']].sum()
+    grouped_df['winrate'] = round(grouped_df['wins'] /
+                                  (grouped_df['wins'] + grouped_df['losses'] + grouped_df['ties']) * 100, 2)
+    return grouped_df.sort_values(by=['winrate'], ascending=False)
+
 def filter_colors(dataframe: DataFrame, colors: list[str], color_filter_style: str) -> DataFrame:
     color_string = "".join(sorted(colors))
     if color_filter_style == "at_most":

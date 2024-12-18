@@ -1,13 +1,14 @@
-from dash import Dash, html, dcc, callback, Input, Output
+from dash import Dash, html, dcc, callback, Input, Output, dash_table
 import pandas as pd
 import plotly.graph_objects as go
 from pandas.core.frame import DataFrame
 import enums
 import dash_bootstrap_components as dbc
 import emoji
-from dataframe_calculations import get_event_data, get_multi_dropdown_data, get_statistics, add_score_data, get_general_statistics, filter_colors, add_date_formats, filter_date_range
+from dataframe_calculations import (get_event_data, get_multi_dropdown_data, get_statistics, add_score_data,
+                                    get_general_statistics, filter_colors, add_date_formats, filter_date_range, get_color_pair_statistics)
 from enums import ColorNames
-from static_design_elements import date_picker, color_picker, general_stats, color_filter_style
+from static_design_elements import date_picker, color_picker, general_stats, color_filter_style, platform_selector
 import re
 
 CSV_URL = 'https://docs.google.com/spreadsheets/d/1eLhLyqqhQkvQ5eOFPhDkJkpYwLvoqBhOAysgQTjCwjc/export?format=csv&gid=0'
@@ -124,15 +125,11 @@ splash_pie = dcc.Graph(
     id='splash-statistics'
 )
 
-platform_selector = dcc.Checklist(
-    id='platform-selector',
-    options=[
-        {'label': 'Paper', 'value': 'paper'},
-        {'label': 'Arena', 'value': 'arena'},
-    ],
-    value=['paper'],
-    inputStyle={"margin-right": "5px"},
+color_combo_table = dcc.Graph(
+    figure=None,
+    id='combo-statistics'
 )
+
 
 # App layout
 app.layout = dbc.Container(
@@ -215,6 +212,17 @@ app.layout = dbc.Container(
                                             style={"width": "50%"}
                                         )
                                     ]
+                                ),
+                                dbc.Row(
+                                    [
+                                        html.Div(
+                                            [
+                                                html.H3("Color combination statistics"),
+                                                color_combo_table
+                                            ],
+                                            style={"width": "100%"}
+                                        ),
+                                    ]
                                 )
                             ],
                         )
@@ -265,7 +273,8 @@ def display_hover_data(hoverData):
     [Output(component_id='events-data', component_property='figure'),
      Output(component_id='color-statistics', component_property='figure'),
      Output(component_id='splash-statistics', component_property='figure'),
-     Output(component_id='general-stats', component_property='children')],
+     Output(component_id='general-stats', component_property='children'),
+     Output(component_id='combo-statistics', component_property='figure')],
     [Input(component_id='format-selector', component_property='value'),
      Input(component_id='set-selector', component_property='value'),
      Input(component_id='platform-selector', component_property='value'),
@@ -287,12 +296,12 @@ def update_graphs(formats, set_display_names, platforms, start_date, end_date, c
         filtered_df = filter_colors(dataframe=filtered_df, colors=colors, color_filter_style=color_filter_style)
 
     if filtered_df.empty:
-        return {}, {}, {}, "No data"
+        return {}, {}, {}, "No data", {}
 
     filtered_df = filter_date_range(dataframe=filtered_df, start_date=start_date, end_date=end_date)
 
     if filtered_df.empty:
-        return {}, {}, {}, "No data"
+        return {}, {}, {}, "No data", {}
 
     data_fig = go.Figure()
 
@@ -350,7 +359,55 @@ def update_graphs(formats, set_display_names, platforms, start_date, end_date, c
 
     data_fig.update_xaxes(type='category', autotickangles=[0, 45, 90])
     general_statistics = get_general_statistics(dataframe=filtered_df, platforms=platforms)
-    return data_fig, color_statistics_fig, splash_statistics_fig, general_statistics
+
+    combo_statistics_data = get_color_pair_statistics(dataframe=filtered_df)
+    combo_fig = go.Figure()
+    combo_fig.add_trace(
+        go.Scatter(
+            x=combo_statistics_data.index.to_list(),
+            # x=combo_statistics_data.winrate,
+            y=combo_statistics_data.winrate,
+            mode='markers',
+            name="Winrate",
+            showlegend=False,
+            marker=dict(size=12, line=dict(width=2, color='Black')),
+            opacity=0.0,
+            )
+        )
+
+    for x,y in zip(combo_statistics_data.index.to_list(), combo_statistics_data.winrate):
+        combo_fig.add_layout_image(
+            dict(
+                source=f'/assets/combo_symbols/{x}.svg',
+                xref="x",
+                yref="y",
+                xanchor="center",
+                yanchor="middle",
+                x=x,
+                y=y,
+                sizex=10,
+                sizey=10,
+                sizing="contain",
+                opacity=1.0,
+                layer="above"
+            )
+        )
+
+    combo_fig.update_layout(
+        yaxis=dict(
+            title=dict(
+                text='Winrate (%)'
+            )
+        ),
+        xaxis=dict(
+            title=dict(
+                text='Color combination'
+            )
+        ),
+    )
+    combo_fig.update_yaxes(range=[0,100])
+
+    return data_fig, color_statistics_fig, splash_statistics_fig, general_statistics, combo_fig
 
 
 if __name__ == '__main__':
