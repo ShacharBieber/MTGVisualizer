@@ -69,3 +69,4 @@ class SetNames(Enum):
     DSK = "Duskmourn: House of Horror"
     FDN = "Foundations"
     PIO = "Pioneer Masters"
+    DFT = "Aetherdrift"

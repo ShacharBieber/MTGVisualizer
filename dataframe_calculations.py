@@ -64,7 +64,10 @@ def add_score_data(dataframe: DataFrame):
     result = []
     for row_index, row in dataframe.iterrows():
         if row["platform"] == "arena":
-            max_wins.append(7)
+            if row["wins"] > 7:
+                max_wins.append(row["wins"] + row["losses"])
+            else:
+                max_wins.append(7)
         else:
             max_wins.append(row["wins"] + row["losses"] + row["ties"])
         if row["ties"] == 0:
@@ -94,7 +97,7 @@ def get_general_statistics(dataframe: DataFrame, platforms: str):
     if 'paper' in platforms or not platforms:
         paper_events = dataframe.query(f"platform == {['paper']}")
         paper_matches_count = sum(paper_events["wins"]) + sum(paper_events["losses"]) + sum(paper_events["ties"])
-        total_games_or_rounds_str += f' | {len(paper_events)} paper decks ({paper_matches_count} matches)'
+        total_games_or_rounds_str += f' | {len(paper_events)} paper decks ({int(paper_matches_count)} matches)'
 
     general_statistics = f'Overall win rate: {win_rate}% | Splash rate: {splash_rate}%{total_games_or_rounds_str} '
     return general_statistics
