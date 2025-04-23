@@ -70,3 +70,4 @@ class SetNames(Enum):
     FDN = "Foundations"
     PIO = "Pioneer Masters"
     DFT = "Aetherdrift"
+    TDM = "Tarkir: Dragonstorm"
