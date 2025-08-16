@@ -6,7 +6,8 @@ import enums
 import dash_bootstrap_components as dbc
 import emoji
 from dataframe_calculations import (get_event_data, get_multi_dropdown_data, get_statistics, add_score_data,
-                                    get_general_statistics, filter_colors, add_date_formats, filter_date_range, get_color_pair_statistics)
+                                    get_general_statistics, filter_colors, add_date_formats, filter_date_range,
+                                    get_color_pair_statistics, get_all_sets_winrates, get_all_sets_hover_data)
 from enums import ColorNames
 from static_design_elements import date_picker, color_picker, general_stats, color_filter_style, platform_selector
 import re
@@ -43,6 +44,54 @@ def set_up_initial_figure(dataframe: DataFrame) -> go.Figure:
     initial_figure.update_xaxes(autorange="reversed")
     return initial_figure
 
+
+def set_up_all_sets_winrate(dataframe: DataFrame) -> go.Figure:
+    initial_winrates = go.Figure()
+    statistics_df = get_all_sets_winrates(dataframe=dataframe)
+    hover_data = get_all_sets_hover_data(dataframe=statistics_df)
+
+    initial_winrates.add_trace(
+        go.Scatter(
+            x=statistics_df.set_code_name,
+            y=statistics_df.winrate,
+            mode='markers',
+            marker_color='red',
+            name="Set winrate",
+            marker=dict(size=12, line=dict(width=2, color='Black')),
+            opacity=0.0,
+            hovertemplate=hover_data
+        )
+    )
+    for x,y in zip(statistics_df["set_code_name"].to_list(), statistics_df.winrate):
+        initial_winrates.add_layout_image(
+            dict(
+                source=f'/assets/set_symbols/{x}.svg',
+                xref="x",
+                yref="y",
+                xanchor="center",
+                yanchor="middle",
+                x=x,
+                y=y,
+                sizex=7,
+                sizey=7,
+                sizing="contain",
+                opacity=1.0,
+                layer="above"
+            )
+        )
+    initial_winrates.update_layout(
+        yaxis=dict(
+            title=dict(
+                text='Winrate (%)'
+            )
+        ),
+        xaxis=dict(
+            title=dict(
+                text='Set code name'
+            )
+        ),
+    )
+    return initial_winrates
 
 def set_up_initial_color_pies(dataframe: DataFrame) -> (go.Figure, go.Figure):
     initial_color_pie = go.Figure()
@@ -86,6 +135,7 @@ initial_color_pie_fig, initial_splash_pie_fig = set_up_initial_color_pies(datafr
 
 set_names_for_multi_dropdown = get_multi_dropdown_data(dataframe=df)
 
+all_set_winrate_fig = set_up_all_sets_winrate(dataframe=df)
 
 set_selector = dcc.Dropdown(
     set_names_for_multi_dropdown,
@@ -126,8 +176,13 @@ splash_pie = dcc.Graph(
 )
 
 color_combo_table = dcc.Graph(
-    figure=None,
+    figure={},
     id='combo-statistics'
+)
+
+all_sets_winrate = dcc.Graph(
+    figure=all_set_winrate_fig,
+    id='all-sets-winrate'
 )
 
 
@@ -219,6 +274,17 @@ app.layout = dbc.Container(
                                             [
                                                 html.H3("Color combination statistics"),
                                                 color_combo_table
+                                            ],
+                                            style={"width": "100%"}
+                                        ),
+                                    ]
+                                ),
+                                dbc.Row(
+                                    [
+                                        html.Div(
+                                            [
+                                                html.H3("All sets statistics"),
+                                                all_sets_winrate
                                             ],
                                             style={"width": "100%"}
                                         ),
@@ -365,7 +431,6 @@ def update_graphs(formats, set_display_names, platforms, start_date, end_date, c
     combo_fig.add_trace(
         go.Scatter(
             x=combo_statistics_data.index.to_list(),
-            # x=combo_statistics_data.winrate,
             y=combo_statistics_data.winrate,
             mode='markers',
             name="Winrate",

@@ -31,7 +31,7 @@ def get_multi_dropdown_data(dataframe: DataFrame) -> list:
     return multi_dropdown_list
 
 
-def get_event_data(dataframe: DataFrame):
+def get_event_data(dataframe: DataFrame) -> list:
     event_data_list = []
     for index, row in dataframe.iterrows():
         event_text = f'Set: {SetNames[row["set_code_name"]].value}<br>'
@@ -46,6 +46,18 @@ def get_event_data(dataframe: DataFrame):
     return event_data_list
 
 
+def get_all_sets_hover_data(dataframe: DataFrame) -> list:
+    sets_data = []
+    for index, row in dataframe.iterrows():
+        set_text = f'Set: {SetNames[row["set_code_name"]].value}<br>'
+        winrate_str = str(row["winrate"])
+        if len(winrate_str) > 5:
+            winrate_str = winrate_str[:5]
+        set_text += f'Winrate: {winrate_str}<br>'
+        set_text += f'Total number of events: {row["total_events"]}'
+        sets_data.append(set_text)
+    return sets_data
+
 def get_statistics(dataframe: DataFrame) -> dict:
     statistics = {
         "color_statistics": {color.value: 0 for color in ColorNames},
@@ -58,6 +70,22 @@ def get_statistics(dataframe: DataFrame) -> dict:
             if type(row["splash"]) is str and color.name in row["splash"]:
                 statistics["splash_statistics"][color.value] += 1
     return statistics
+
+def get_all_sets_winrates(dataframe: DataFrame) -> DataFrame:
+    agg_df = dataframe.groupby("set_code_name").agg(
+        wins=("wins", "sum"),
+        losses=("losses", "sum"),
+        ties=("ties", "sum"),
+        total_events=("set_code_name", "size")
+    ).reset_index()
+
+    agg_df["winrate"] = (agg_df["wins"] / (agg_df["wins"] + agg_df["losses"] + agg_df["ties"])) * 100
+
+    enum_order = {name.name: i for i, name in enumerate(reversed(SetNames))}
+
+    agg_df_sorted = agg_df.sort_values(by="set_code_name", key=lambda col: col.map(enum_order))
+
+    return agg_df_sorted[["set_code_name", "winrate", "total_events"]]
 
 def add_score_data(dataframe: DataFrame):
     max_wins = []

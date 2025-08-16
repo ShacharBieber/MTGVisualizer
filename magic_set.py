@@ -71,3 +71,5 @@ class SetNames(Enum):
     PIO = "Pioneer Masters"
     DFT = "Aetherdrift"
     TDM = "Tarkir: Dragonstorm"
+    FIN = "Final Fantasy"
+    EOE = "Edge of Eternity"
