@@ -79,7 +79,7 @@ def get_all_sets_winrates(dataframe: DataFrame) -> DataFrame:
         total_events=("set_code_name", "size")
     ).reset_index()
 
-    agg_df["winrate"] = (agg_df["wins"] / (agg_df["wins"] + agg_df["losses"] + agg_df["ties"])) * 100
+    agg_df["winrate"] = (agg_df["wins"] / (agg_df["wins"] + agg_df["losses"])) * 100
 
     enum_order = {name.name: i for i, name in enumerate(reversed(SetNames))}
 
