@@ -79,3 +79,7 @@ class SetNames(Enum):
     TLA = "Avatar: The Last Airbender"
     ECL = "Lorwyn Eclipsed"
     TMT = "Teenage Mutant Ninja Turtles"
+    SOS = "Secrets of Strixhaven"
+    MSH = "Marvel Superheroes"
+    HOB = "The Hobbit"
+    FRA = "Reality Fracture"
